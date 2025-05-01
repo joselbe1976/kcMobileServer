@@ -12,6 +12,15 @@ public func configure(_ app: Application) async throws {
 
     //app.databases.use(DatabaseConfigurationFactory.sqlite(.file("db.sqlite")), as: .sqlite)
     //app.databases.use(.sqlite(.file("db2.sqlite")), as: .sqlite)
+   
+    //Control environment vars
+    var host = Environment.get("DATABASE_HOST") ?? ""
+    
+    if host == "" {
+        NSLog("🔴📂 Environment file not found❗")
+        throw Abort(.notFound)
+    }
+    
     
    
     //PostgreSQL

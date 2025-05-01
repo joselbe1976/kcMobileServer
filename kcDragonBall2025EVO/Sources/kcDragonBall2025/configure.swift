@@ -1,6 +1,7 @@
 import NIOSSL
 import Fluent
-import FluentSQLiteDriver
+//import FluentSQLiteDriver
+import FluentPostgresDriver
 import Vapor
 import JWT
 
@@ -10,7 +11,19 @@ public func configure(_ app: Application) async throws {
     // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
 
     //app.databases.use(DatabaseConfigurationFactory.sqlite(.file("db.sqlite")), as: .sqlite)
-    app.databases.use(.sqlite(.file("db2.sqlite")), as: .sqlite)
+    //app.databases.use(.sqlite(.file("db2.sqlite")), as: .sqlite)
+    
+   
+    //PostgreSQL
+    app.databases.use(.postgres(
+        hostname: Environment.get("DATABASE_HOST") ?? "",
+        port: Environment.get("DATABASE_PORT").flatMap(Int.init(_:)) ??  5432,
+        username: Environment.get("DATABASE_USERNAME") ?? "",
+        password: Environment.get("DATABASE_PASSWORD") ?? "",
+        database: Environment.get("DATABASE_NAME") ?? "",
+        tlsConfiguration: .forClient(certificateVerification: .none)
+    ), as: .psql)
+    
     
 
     app.migrations.add(Bootcamps_v1())

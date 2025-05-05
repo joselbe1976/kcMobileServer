@@ -9,10 +9,15 @@ import JWT
 public func configure(_ app: Application) async throws {
     // uncomment to serve files from /Public folder
     // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
-    app.http.server.configuration.supportPipelining = true
+    
+    //para que funcione con el NGinx correctamete
+    //app.http.server.configuration.supportPipelining = true
     app.http.server.configuration.port = 8080
     app.http.server.configuration.hostname = "127.0.0.1"
-
+    app.middleware.use(ForwardedHeaderMiddleware())
+    
+    
+    
     //app.databases.use(DatabaseConfigurationFactory.sqlite(.file("db.sqlite")), as: .sqlite)
     //app.databases.use(.sqlite(.file("db2.sqlite")), as: .sqlite)
    
@@ -59,4 +64,17 @@ public func configure(_ app: Application) async throws {
     
     // register routes
     try routes(app)
+}
+
+
+
+struct ForwardedHeaderMiddleware: Middleware {
+    func respond(to request: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
+        // Por ejemplo, tomar IP de encabezado "X-Forwarded-For"
+        if let forwardedFor = request.headers.first(name: "X-Forwarded-For") {
+            request.logger.info("Forwarded IP: \(forwardedFor)")
+        }
+
+        return next.respond(to: request)
+    }
 }

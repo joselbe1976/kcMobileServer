@@ -9,12 +9,15 @@ import JWT
 public func configure(_ app: Application) async throws {
     // uncomment to serve files from /Public folder
     // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+    app.http.server.configuration.supportPipelining = true
+    app.http.server.configuration.port = 8080
+    app.http.server.configuration.hostname = "127.0.0.1"
 
     //app.databases.use(DatabaseConfigurationFactory.sqlite(.file("db.sqlite")), as: .sqlite)
     //app.databases.use(.sqlite(.file("db2.sqlite")), as: .sqlite)
    
     //Control environment vars
-    var host = Environment.get("DATABASE_HOST") ?? ""
+    let host = Environment.get("DATABASE_HOST") ?? ""
     
     if host == "" {
         NSLog("🔴📂 Environment file not found❗")
